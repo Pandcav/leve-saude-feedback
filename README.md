@@ -1,69 +1,112 @@
-# React + TypeScript + Vite
+# Leve Saúde - Sistema de Feedback Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dashboard administrativo para gerenciamento de feedbacks dos usuários da plataforma Leve Saúde.
 
-Currently, two official plugins are available:
+## 🌟 Funcionalidades Implementadas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### ✅ Autenticação
+- Sistema de login com Firebase Auth
+- Proteção de rotas autenticadas
+- Context API para gerenciamento de estado de autenticação
 
-## Expanding the ESLint configuration
+### ✅ Dashboard Administrativo
+- Métricas em tempo real (Total de Feedbacks, Nota Média, Usuários Únicos, Taxa de Satisfação)
+- Gráficos interativos com Recharts:
+  - Distribuição de Avaliações (Gráfico de Barras)
+  - Avaliação Média (Gráfico Gauge)
+  - Status dos Feedbacks (Gráfico de Pizza)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### ✅ Gerenciamento de Feedbacks
+- Listagem completa com paginação
+- Sistema de filtros avançados (busca, status, avaliação, data)
+- Ações por feedback (marcar como lido/respondido, visualizar detalhes, responder, excluir)
+- Exportação de dados (CSV e JSON)
+- Sistema de notificações para novos feedbacks
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### ✅ Interface Responsiva
+- Design totalmente responsivo com Tailwind CSS
+- Otimizado para mobile, tablet, laptop e desktop
+- Interface moderna e intuitiva
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### ✅ Tecnologias Utilizadas
+- **Frontend:** React 18 + TypeScript + Vite
+- **Styling:** Tailwind CSS
+- **Backend:** Firebase (Auth + Firestore)
+- **Gráficos:** Recharts
+- **Ícones:** Lucide React
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## � Como Executar o Projeto
+
+### Pré-requisitos
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+
+### Instalação
+
+1. **Clone o repositório:**
+   ```bash
+   git clone https://github.com/Pandcav/teste-web-leve-saude.git
+   ```
+
+2. **Navegue até a pasta do projeto:**
+   ```bash
+   cd test-web-leve-saude
+   ```
+
+3. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
+
+4. **Configure o Firebase:**
+   - Crie um projeto no Firebase Console
+   - Configure Authentication e Firestore
+   - Atualize as credenciais em `src/lib/firebase.ts`
+
+5. **Inicie o servidor de desenvolvimento:**
+   ```bash
+   npm run dev
+   ```
+
+6. **Acesse a aplicação:**
+   - Abra [http://localhost:5173](http://localhost:5173) no navegador
+
+## � Estrutura do Projeto
+
+```
+src/
+├── components/
+│   ├── auth/
+│   │   └── AuthProvider.tsx
+│   ├── feedback/
+│   │   ├── table/
+│   │   │   └── FeedbackTable.tsx
+│   │   ├── modals/
+│   │   │   ├── FeedbackDetailsModal.tsx
+│   │   │   └── FeedbackResponseModal.tsx
+│   │   └── dropdown/
+│   │       └── ActionDropdown.tsx
+│   └── ui/
+│       ├── ConfirmationModal.tsx
+│       └── NotificationModal.tsx
+├── pages/
+│   ├── Dashboard.tsx
+│   └── Login.tsx
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useFeedbacks.ts
+│   └── useNotification.ts
+├── types/
+│   └── index.ts
+├── utils/
+│   └── formatters.ts
+└── lib/
+    └── firebase.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🛠️ Scripts Disponíveis
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Gera build de produção
+- `npm run preview` - Visualiza o build de produção
+- `npm run lint` - Executa o linter ESLint
