@@ -71,54 +71,43 @@ export function NotificationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 modal-backdrop">
+    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 pt-20">
       <div 
         className={`
           ${config.bgColor} ${config.borderColor} 
-          border rounded-lg shadow-lg max-w-md w-full mx-4 p-6
+          border rounded-lg shadow-lg max-w-sm w-full mx-auto
           transform transition-all duration-300 ease-in-out
-          ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
+          ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}
         `}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <IconComponent className={`h-6 w-6 ${config.iconColor}`} />
-          </div>
-          <div className="ml-3 flex-1">
-            <h3 className={`text-lg font-medium ${config.titleColor}`}>
-              {title}
-            </h3>
-            <div className={`mt-2 text-sm ${config.messageColor}`}>
-              <p style={{ whiteSpace: 'pre-line' }}>{message}</p>
+        <div className="p-4">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <IconComponent className={`h-6 w-6 ${config.iconColor}`} />
+            </div>
+            <div className="ml-3 w-0 flex-1 pt-0.5">
+              <p className={`text-sm font-medium ${config.titleColor}`}>
+                {title}
+              </p>
+              <p className={`mt-1 text-sm ${config.messageColor}`} style={{ whiteSpace: 'pre-line' }}>
+                {message}
+              </p>
+            </div>
+            <div className="ml-4 flex-shrink-0 flex">
+              <button
+                onClick={onClose}
+                className={`
+                  inline-flex rounded-md p-1.5 text-gray-400 hover:text-gray-500
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500
+                `}
+              >
+                <span className="sr-only">Fechar</span>
+                <X className="h-5 w-5" />
+              </button>
             </div>
           </div>
-          <div className="ml-4 flex-shrink-0">
-            <button
-              className={`
-                inline-flex rounded-md p-1.5 hover:bg-opacity-20 hover:bg-gray-600 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent 
-                ${config.iconColor}
-              `}
-              onClick={onClose}
-            >
-              <span className="sr-only">Fechar</span>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
         </div>
-        
-        {!autoClose && (
-          <div className="mt-4">
-            <button
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm"
-              onClick={onClose}
-            >
-              OK
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

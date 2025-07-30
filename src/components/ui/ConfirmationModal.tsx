@@ -58,57 +58,46 @@ export function ConfirmationModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 modal-backdrop">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 modal-backdrop p-4">
       <div 
         className={`
-          ${config.bgColor} ${config.borderColor} 
-          border rounded-lg shadow-lg max-w-md w-full mx-4 p-6
+          bg-white rounded-lg shadow-lg max-w-lg w-full mx-auto
           transform transition-all duration-300 ease-in-out
           ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
         `}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <AlertTriangle className={`h-6 w-6 ${config.iconColor}`} />
-          </div>
-          <div className="ml-3 flex-1">
-            <h3 className={`text-lg font-medium ${config.titleColor}`}>
-              {title}
-            </h3>
-            <div className={`mt-2 text-sm ${config.messageColor}`}>
-              <p>{message}</p>
+        <div className="p-4 sm:p-6">
+          <div className="flex items-start">
+            <div className={`flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full ${config.bgColor}`}>
+              <AlertTriangle className={`h-6 w-6 ${config.iconColor}`} />
+            </div>
+            <div className="ml-4 mt-0 text-left">
+              <h3 className={`text-lg font-medium ${config.titleColor}`}>
+                {title}
+              </h3>
+              <div className="mt-2">
+                <p className={`text-sm ${config.messageColor}`}>
+                  {message}
+                </p>
+              </div>
             </div>
           </div>
-          <div className="ml-4 flex-shrink-0">
-            <button
-              className={`
-                inline-flex rounded-md p-1.5 hover:bg-opacity-20 hover:bg-gray-600 
-                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent 
-                ${config.iconColor}
-              `}
-              onClick={onClose}
-            >
-              <span className="sr-only">Fechar</span>
-              <X className="h-5 w-5" />
-            </button>
-          </div>
         </div>
-        
-        <div className="mt-6 flex gap-3">
+        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
           <button
             type="button"
-            className="flex-1 inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-            onClick={onClose}
-          >
-            {cancelText}
-          </button>
-          <button
-            type="button"
-            className={`flex-1 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 ${config.confirmBg}`}
+            className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white ${config.confirmBg} focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm`}
             onClick={handleConfirm}
           >
             {confirmText}
+          </button>
+          <button
+            type="button"
+            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+            onClick={onClose}
+          >
+            {cancelText}
           </button>
         </div>
       </div>

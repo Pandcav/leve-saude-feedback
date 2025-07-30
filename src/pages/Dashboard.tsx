@@ -24,7 +24,8 @@ import {
   Legend,
   CartesianGrid,
   XAxis,
-  YAxis
+  YAxis,
+  Customized
 } from 'recharts';
 import { FeedbackDetailsModal, FeedbackResponseModal, FeedbackTable } from '../components/feedback';
 import { NotificationModal } from '../components/ui/NotificationModal';
@@ -32,15 +33,7 @@ import { ConfirmationModal } from '../components/ui/ConfirmationModal';
 import type { FeedbackFilters } from '../types';
 import { formatDate } from '../utils/formatters';
 
-type Needle = {
-  value: number;
-  data: { name: string; value: number; color: string }[];
-  cx: number;
-  cy: number;
-  iR: number;
-  oR: number;
-  color: string;
-};
+
 
 
 export default function Dashboard() {
@@ -90,12 +83,6 @@ export default function Dashboard() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   // Estados para paginação - removidos pois agora estão no componente FeedbackTable
-
-  const cx = 220;
-  const cy = 185;
-  const iR = 250;
-  const oR = 100;
-
 
   const handleSignOut = () => {
     signOut();
@@ -331,15 +318,22 @@ export default function Dashboard() {
 
   const RADIAN = Math.PI / 180;
 
-  const needle = ({ value, data, cx, cy, iR, oR, color }: Needle) => {
-    const total = data.reduce((sum, entry) => sum + entry.value, 0);
-    const ang = 180.0 * (1 - value / total);
-    const length = (iR + 2 * oR) / 3;
+  const needle = (props: any) => {
+    const { value, data, cx, cy, iR, oR, color } = props;
+    if (cx === undefined || cy === undefined) {
+      return null;
+    }
+    let total = 0;
+    data.forEach((v: { value: number; }) => {
+      total += v.value;
+    });
+    const ang = 180.0 * (1 - value / 5);
+    const length = (iR + oR) / 2.5;
     const sin = Math.sin(-RADIAN * ang);
     const cos = Math.cos(-RADIAN * ang);
     const r = 5;
-    const x0 = cx + 5;
-    const y0 = cy + 5;
+    const x0 = cx;
+    const y0 = cy;
     const xba = x0 + r * sin;
     const yba = y0 - r * cos;
     const xbb = x0 - r * sin;
@@ -360,14 +354,14 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-purple-100">
-      <header className="bg-white border-b border-gray-200 px-6 py-4 rounded-b-3xl">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-800">Leve Saúde Dashboard</h1>
-            <p className="text-2xl text-gray-600">Gerencie feedbacks e monitore a satisfação</p>
+      <header className="bg-white border-b border-gray-200 px-3 sm:px-6 py-4 rounded-b-3xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="text-center lg:text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 lg:text-3xl">Leve Saúde Dashboard</h1>
+            <p className="text-base sm:text-xl text-gray-600 lg:text-xl">Gerencie feedbacks e monitore a satisfação</p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-end gap-2 sm:gap-4">
             {/* Sistema de Notificações */}
             <div className="relative notifications-menu">
               <button
@@ -378,7 +372,7 @@ export default function Dashboard() {
                 onClick={() => setShowNotifications(!showNotifications)}
                 title={`${newFeedbacksCount} feedback(s) novo(s)`}
               >
-                <Bell className="w-8 h-8" />
+                <Bell className="w-7 h-7 sm:w-8 sm:h-8" />
                 {newFeedbacksCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center px-1">
                     {newFeedbacksCount > 99 ? '99+' : newFeedbacksCount}
@@ -474,22 +468,22 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center space-x-2">
-              <UserCircle className="w-8 h-8 text-gray-600" />
-              <span className="text-2xl text-gray-700">{user?.email}</span>
+              <UserCircle className="w-7 h-7 sm:w-8 sm:h-8 text-gray-600" />
+              <span className="hidden md:inline text-lg lg:text-xl text-gray-700">{user?.email}</span>
             </div>
 
             <button
               onClick={handleSignOut}
-              className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-3 sm:px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
-              <LogOut className="w-8 h-8" />
-              <span className="text-2xl">Sair</span>
+              <LogOut className="w-7 h-7 sm:w-8 sm:h-8" />
+              <span className="hidden sm:inline text-lg lg:text-xl">Sair</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="w-2/3 mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="w-full px-2 sm:px-4 lg:px-8 py-8">
         {/* Indicador de carregamento */}
         {loading && (
           <div className="flex items-center justify-center py-12">
@@ -513,20 +507,20 @@ export default function Dashboard() {
 
         {!loading && !error && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {metricsCards.map((metric, index) => (
-                <div key={index} className="h-auto bg-white rounded-lg shadow p-6">
+                <div key={index} className="h-auto bg-white rounded-lg shadow p-4 sm:p-6">
                   <div className="flex items-center">
                     <div className={`${metric.color} p-3 rounded-lg`}>
-                      <metric.icon className="w-8 h-8 text-white" />
+                      <metric.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
 
                     <div className="ml-4">
-                      <p className="text-xl font-medium text-gray-600">{metric.title}</p>
-                      <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
+                      <p className="text-base sm:text-lg font-medium text-gray-600">{metric.title}</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900">{metric.value}</p>
                     </div>
                   </div>
-                  <p className="text-xl text-green-600 flex items-center mt-5">
+                  <p className="text-sm sm:text-base text-green-600 flex items-center mt-4 sm:mt-5">
                     <TrendingUp className="w-4 h-4 mr-1" />
                     {metric.change} desde o mês passado
                   </p>
@@ -536,17 +530,18 @@ export default function Dashboard() {
           </>
         )}
 
-        <div className='flex justify-between items-center mb-8'>
-          <div className=' h-85 bg-white w-1/2 rounded-lg py-4 mr-6'>
-            <h2 className='text-2xl font-semibold text-gray-800 text-center mb-2'>Distribuição de Avaliações por Nota (Rating)</h2>
+        <div className='flex flex-col lg:flex-row justify-between items-center mb-8 gap-6'>
+          <div className='h-80 sm:h-96 bg-white w-full lg:w-1/2 rounded-lg py-4 px-2 sm:px-4'>
+            <h2 className='text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 text-center mb-2'>Distribuição de Avaliações</h2>
             <ResponsiveContainer width="100%" height="90%">
-              <BarChart width={150} height={40} data={rating} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <BarChart data={rating} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
                 <XAxis
                   dataKey="name"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 10 }}
                   angle={-45}
                   textAnchor="end"
-                  height={60}
+                  height={50}
+                  interval={0}
                 />
                 <YAxis tick={{ fontSize: 12 }} />
                 <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
@@ -560,7 +555,8 @@ export default function Dashboard() {
                     backgroundColor: '#fff',
                     border: '1px solid #e5e7eb',
                     borderRadius: '8px',
-                    fontSize: '14px'
+                    fontSize: '12px',
+                    padding: '8px'
                   }}
                 />
                 <Bar
@@ -576,11 +572,11 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          <div className='flex justify-between items-center w-1/2'>
-            <div className='h-85 bg-white w-2/3 rounded-lg py-4 mr-6'>
-              <h2 className='text-2xl font-semibold text-gray-800 text-center mb-2'>Avaliação Média dos Feedbacks</h2>
+          <div className='flex flex-col sm:flex-row justify-between items-center w-full lg:w-1/2 gap-6'>
+            <div className='h-80 sm:h-96 bg-white w-full sm:w-1/2 rounded-lg py-4 px-2'>
+              <h2 className='text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 text-center mb-2'>Avaliação Média</h2>
               <ResponsiveContainer width="100%" height="90%">
-                <PieChart width={150} height={40}>
+                <PieChart>
                   <Pie
                     dataKey="value"
                     startAngle={180}
@@ -588,8 +584,8 @@ export default function Dashboard() {
                     data={mediumRating}
                     cx="50%"
                     cy="80%"
-                    innerRadius="100"
-                    outerRadius="180"
+                    innerRadius={80}
+                    outerRadius={120}
                     fill="#8884d8"
                     stroke="none"
                   >
@@ -597,13 +593,12 @@ export default function Dashboard() {
                       <Cell key={`cell-${entry.name}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  {needle({ value, data: mediumRating, cx, cy, iR, oR, color: '#797979ff' })}
                   <text
                     x="50%"
-                    y="75%"
+                    y="70%"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="24"
+                    fontSize="20"
                     fontWeight="bold"
                     fill="#374151"
                   >
@@ -611,10 +606,10 @@ export default function Dashboard() {
                   </text>
                   <text
                     x="50%"
-                    y="82%"
+                    y="80%"
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize="14"
+                    fontSize="12"
                     fill="#9CA3AF"
                   >
                     de 5.0
@@ -623,10 +618,10 @@ export default function Dashboard() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className='h-85 bg-white w-2/3 rounded-lg py-4'>
-              <h2 className='text-2xl font-semibold text-gray-800 text-center mb-2'>Proporção de Status dos Feedbacks</h2>
+            <div className='h-80 sm:h-96 bg-white w-full sm:w-1/2 rounded-lg py-4 px-2'>
+              <h2 className='text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 text-center mb-2'>Status dos Feedbacks</h2>
               <ResponsiveContainer width="100%" height="90%">
-                <PieChart width={150} height={40}>
+                <PieChart>
                   <Tooltip
                     formatter={(value: number, name: string) => [
                       `${value} feedback${value !== 1 ? 's' : ''}`,
@@ -637,7 +632,8 @@ export default function Dashboard() {
                       backgroundColor: '#fff',
                       border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      fontSize: '14px'
+                      fontSize: '12px',
+                      padding: '8px'
                     }}
                   />
                   <Pie
@@ -645,10 +641,10 @@ export default function Dashboard() {
                     dataKey="value"
                     fill="#884d98"
                     nameKey="label"
-                    cx="55%"
+                    cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
+                    innerRadius={50}
+                    outerRadius={80}
                     label={({ value, percent }: any) =>
                       value && value > 0 && percent ? `${(percent * 100).toFixed(0)}%` : ''
 
@@ -664,9 +660,9 @@ export default function Dashboard() {
                     layout="vertical"
                     align="right"
                     verticalAlign="middle"
-                    iconSize={12}
+                    iconSize={10}
                     iconType='circle'
-                    wrapperStyle={{ fontSize: '1.5rem', paddingRight: '5px' }}
+                    wrapperStyle={{ fontSize: '1rem', paddingRight: '5px' }}
                     formatter={(value) =>
                       value === 'NOVO' ? 'Novos' :
                         value === 'LIDO' ? 'Lidos' : 'Respondidos'
