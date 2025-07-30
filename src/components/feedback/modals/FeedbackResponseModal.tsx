@@ -5,6 +5,8 @@ import {
   Star
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNotification } from '../../../hooks/useNotification';
+import { NotificationModal } from '../../ui/NotificationModal';
 import type { Feedback } from '../../../types';
 
 interface FeedbackResponseModalProps {
@@ -21,6 +23,12 @@ export default function FeedbackResponseModal({
   onSendResponse
 }: FeedbackResponseModalProps) {
   const [responseText, setResponseText] = useState('');
+  const { 
+    showWarning, 
+    notification, 
+    isOpen: isNotificationOpen, 
+    hideNotification 
+  } = useNotification();
 
   // Limpar o texto quando o modal abre/fecha
   useEffect(() => {
@@ -33,7 +41,7 @@ export default function FeedbackResponseModal({
 
   const handleSendResponse = () => {
     if (!responseText.trim()) {
-      alert('Por favor, digite uma resposta antes de enviar.');
+      showWarning('Atenção', 'Por favor, digite uma resposta antes de enviar.');
       return;
     }
     
@@ -127,6 +135,19 @@ export default function FeedbackResponseModal({
           </button>
         </div>
       </div>
+
+      {/* Modal de Notificação */}
+      {notification && (
+        <NotificationModal
+          isOpen={isNotificationOpen}
+          onClose={hideNotification}
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+          autoClose={notification.autoClose}
+          autoCloseDelay={notification.autoCloseDelay}
+        />
+      )}
     </div>
   );
 }

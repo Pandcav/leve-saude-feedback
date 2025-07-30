@@ -1,5 +1,6 @@
 import { useAuth } from '../hooks/useAuth';
 import { useFeedbacks } from '../hooks/useFeedbacks';
+import { useNotification } from '../hooks/useNotification';
 import { useState, useEffect } from 'react';
 import {
   UserCircle,
@@ -26,6 +27,8 @@ import {
   YAxis
 } from 'recharts';
 import { FeedbackDetailsModal, FeedbackResponseModal, FeedbackTable } from '../components/feedback';
+import { NotificationModal } from '../components/ui/NotificationModal';
+import { ConfirmationModal } from '../components/ui/ConfirmationModal';
 import type { FeedbackFilters } from '../types';
 import { formatDate } from '../utils/formatters';
 
@@ -42,6 +45,17 @@ type Needle = {
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
+  const { 
+    showSuccess, 
+    showError, 
+    notification, 
+    isOpen: isNotificationOpen, 
+    hideNotification,
+    confirmation,
+    isConfirmationOpen,
+    showConfirmation,
+    hideConfirmation
+  } = useNotification();
 
   // Hook para gerenciar feedbacks do Firebase
   const {
@@ -197,9 +211,9 @@ export default function Dashboard() {
     try {
       await updateFeedbackStatus(feedbackId, 'lido');
       setOpenActionMenuId(null);
-      alert(`Feedback marcado como lido!`);
+      showSuccess('Sucesso', 'Feedback marcado como lido!');
     } catch (error) {
-      alert('Erro ao marcar feedback como lido.');
+      showError('Erro', 'Erro ao marcar feedback como lido.');
     }
   };
 
@@ -207,9 +221,9 @@ export default function Dashboard() {
     try {
       await updateFeedbackStatus(feedbackId, 'respondido');
       setOpenActionMenuId(null);
-      alert(`Feedback marcado como respondido!`);
+      showSuccess('Sucesso', 'Feedback marcado como respondido!');
     } catch (error) {
-      alert('Erro ao marcar feedback como respondido.');
+      showError('Erro', 'Erro ao marcar feedback como respondido.');
     }
   };
 
@@ -223,15 +237,22 @@ export default function Dashboard() {
   };
 
   const handleDeleteFeedback = async (feedbackId: string) => {
-    if (window.confirm(`Tem certeza que deseja excluir este feedback?`)) {
-      try {
-        await deleteFeedback(feedbackId);
-        alert(`Feedback excluído com sucesso!`);
-        setOpenActionMenuId(null);
-      } catch (error) {
-        alert('Erro ao excluir feedback.');
+    showConfirmation({
+      title: 'Confirmar Exclusão',
+      message: 'Tem certeza que deseja excluir este feedback? Esta ação não pode ser desfeita.',
+      confirmText: 'Excluir',
+      cancelText: 'Cancelar',
+      type: 'danger',
+      onConfirm: async () => {
+        try {
+          await deleteFeedback(feedbackId);
+          showSuccess('Sucesso', 'Feedback excluído com sucesso!');
+          setOpenActionMenuId(null);
+        } catch (error) {
+          showError('Erro', 'Erro ao excluir feedback.');
+        }
       }
-    }
+    });
   };
 
   // Função para abrir modal de resposta
@@ -247,10 +268,13 @@ export default function Dashboard() {
       await addResponse(feedbackId, responseText, user?.email || 'admin');
       const feedback = filteredFeedbacks.find(f => f.id === feedbackId);
       if (feedback) {
-        alert(`Resposta enviada com sucesso para ${feedback.user.name}!\n\nResposta: "${responseText}"`);
+        showSuccess(
+          'Resposta Enviada', 
+          `Resposta enviada com sucesso para ${feedback.user.name}!\n\nResposta: "${responseText}"`
+        );
       }
     } catch (error) {
-      alert('Erro ao enviar resposta.');
+      showError('Erro', 'Erro ao enviar resposta.');
     }
   };
 
@@ -289,9 +313,9 @@ export default function Dashboard() {
       );
       await Promise.all(promises);
       setShowNotifications(false);
-      alert(`${newFeedbacksCount} feedback(s) marcado(s) como lido!`);
+      showSuccess('Sucesso', `${newFeedbacksCount} feedback(s) marcado(s) como lido!`);
     } catch (error) {
-      alert('Erro ao marcar feedbacks como lidos.');
+      showError('Erro', 'Erro ao marcar feedbacks como lidos.');
     }
   };
 
@@ -683,6 +707,33 @@ export default function Dashboard() {
         onMarkAsResponded={handleMarkAsResponded}
         onOpenResponse={handleOpenResponse}
       />
+
+      {/* Modal de Notificação */}
+      {notification && (
+        <NotificationModal
+          isOpen={isNotificationOpen}
+          onClose={hideNotification}
+          type={notification.type}
+          title={notification.title}
+          message={notification.message}
+          autoClose={notification.autoClose}
+          autoCloseDelay={notification.autoCloseDelay}
+        />
+      )}
+
+      {/* Modal de Confirmação */}
+      {confirmation && (
+        <ConfirmationModal
+          isOpen={isConfirmationOpen}
+          onClose={hideConfirmation}
+          onConfirm={confirmation.onConfirm}
+          title={confirmation.title}
+          message={confirmation.message}
+          confirmText={confirmation.confirmText}
+          cancelText={confirmation.cancelText}
+          type={confirmation.type}
+        />
+      )}
     </div>
   );
 }
